@@ -1,32 +1,55 @@
 import { useState } from 'react'
-import { db } from '../components/utils/firebase'
-import { collection, addDoc, Timestamp } from 'firebase/firestore'
+import { collection, } from 'firebase/firestore'
 
-import { sample_data } from "../sample_data"
+
+import { query, orderBy } from 'firebase/firestore';
+import { useFirestore, useFirestoreCollectionData } from 'reactfire';
+// import { sample_data } from "../sample_data"
+
+
 function AddTask({ onClose, open }) {
 
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
+  console.log("ADD TASK");
+  // easily access the Firestore library
+  const firestore = useFirestore();
+  const animalsCollection = collection(firestore, 'sample');
+  const [isAscending] = useState(false);
+  const animalsQuery = query(animalsCollection, orderBy('commonName', isAscending ? 'asc' : 'desc'));
+  const { status, data: animals } = useFirestoreCollectionData(animalsQuery, {
+    idField: 'id',
+  });
+
+  console.log(animals);
+
+  // easily check the loading status
+  if (status === 'loading') {
+    return <p>Fetching burrito flavor...</p>;
+  }
 
   /* function to add new task to firestore */
-  const handleSubmit = async (e) => {
-    // e.preventDefault()
-    // try {
-    //   for (let data of sample_data) {
-    //     await addDoc(collection(db, 'sample'), {
-    //       ...data,
-    //       created: Timestamp.now()
-    //     })
-    //   }
+  // const handleSubmit = async (e) => {
+  //   // e.preventDefault()
+  //   // try {
+  //   //   for (let data of sample_data) {
+  //   //     await addDoc(collection(db, 'sample'), {
+  //   //       ...data,
+  //   //       created: Timestamp.now()
+  //   //     })
+  //   //   }
 
-    // } catch (err) {
-    //   alert(err)
-    // }
-  }
+  //   // } catch (err) {
+  //   //   alert(err)
+  //   // }
+  // }
 
   return (
     <div >
-      <form onSubmit={handleSubmit} className='addTask' name='addTask'>
+      <ul>
+        {animals.map((animal) => (
+          <li key={animal.id}>{animal.TITLE}</li>
+        ))}
+      </ul>
+      {/* <form onSubmit={handleSubmit} className='addTask' name='addTask'>
         <input
           type='text'
           name='title'
@@ -38,7 +61,7 @@ function AddTask({ onClose, open }) {
           placeholder='Enter task decription'
           value={description}></textarea>
         <button type='submit'>Done</button>
-      </form>
+      </form> */}
     </div>
   )
 }
