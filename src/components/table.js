@@ -125,7 +125,7 @@ function Table({ columns: userColumns, data, renderRowSubComponent }) {
         <tbody {...getTableBodyProps()}>
           {rows.map((row, i) => {
             prepareRow(row)
-            console.log(row);
+            // console.log(row);
             return (
               // Use a React.Fragment here so the table markup is still valid
               <React.Fragment key={row.getRowProps().key}>
